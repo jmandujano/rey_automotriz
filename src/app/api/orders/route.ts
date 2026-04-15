@@ -96,7 +96,7 @@ async function sendOrderWhatsAppNotification(
       to: formattedNumber,
     });
 
-    console.log('✅ Notificación enviada:', twilioMessage.sid);
+    console.log('✅ Notificación enviadaaaaa:', twilioMessage.sid);
 
     return {
       success: true,
@@ -516,6 +516,23 @@ export async function POST(req: NextRequest) {
           }
         },
       });
+
+      // Crear cuota única si es pago contado
+      console.log('🔍 tipo_pago:', JSON.stringify(tipo_pago), '| fecha_pago_programada:', JSON.stringify(fecha_pago_programada));
+      if (tipo_pago.toLowerCase().trim() === 'contado' && fecha_pago_programada) {
+        console.log('💰 Creando cuota contado - id_pedido:', nuevoPedido.id_pedido, 'total:', total, 'fecha:', fecha_pago_programada);
+        const cuotaContado = await tx.pedido_cuotas.create({
+          data: {
+            id_pedido: nuevoPedido.id_pedido,
+            numero_cuota: 1,
+            monto_cuota: total,
+            saldo_pendiente: total,
+            estado_pago: 'pendiente',
+            fecha_pago_programada: new Date(fecha_pago_programada),
+          }
+        });
+        console.log('✅ Cuota contado creada:', cuotaContado.id_cuota);
+      }
 
       // Crear cuotas si es pago a crédito
       if (tipo_pago.toLowerCase() === 'credito' && fechas_pago && Array.isArray(fechas_pago)) {

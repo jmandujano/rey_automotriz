@@ -29,7 +29,7 @@ export default function AuthLayout({
                   <Image
                     width={231}
                     height={48}
-                    src="/images/logo/logo-dark.png"
+                    src="/images/logo/rey-logo-dark.png"
                     alt="Rey Automotriz"
                   />
                 </Link>

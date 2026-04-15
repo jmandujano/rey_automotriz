@@ -523,7 +523,7 @@ export default function NewOrderPage() {
   }
 
   function updateCartItemQuantity(index: number, newQuantity: number) {
-    if (newQuantity <= 0) return;
+    if (newQuantity < 0) return;
     
     setCart((prev) =>
       prev.map((item, i) => {
@@ -814,15 +814,37 @@ export default function NewOrderPage() {
                             </td>
                             <td className="py-3 px-2">
                               <div className="flex flex-col items-center gap-1">
-                                <input
-                                  type="number"
-                                  min={1}
-                                  value={item.cantidad}
-                                  onChange={(e) =>
-                                    updateCartItemQuantity(index, Number(e.target.value))
-                                  }
-                                  className="h-9 w-20 text-center rounded border px-2 text-sm text-gray-800 bg-white dark:bg-gray-900 dark:text-white/90 dark:border-gray-700"
-                                />
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => updateCartItemQuantity(index, item.cantidad - 1)}
+                                    className="flex items-center justify-center w-7 h-7 rounded border text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-bold"
+                                  >
+                                    −
+                                  </button>
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={item.cantidad === 0 ? "" : item.cantidad}
+                                    onChange={(e) => {
+                                      const raw = e.target.value.replace(/\D/g, "");
+                                      updateCartItemQuantity(index, raw === "" ? 0 : Number(raw));
+                                    }}
+                                    onBlur={(e) => {
+                                      if (e.target.value === "" || Number(e.target.value) < 1) {
+                                        updateCartItemQuantity(index, 1);
+                                      }
+                                    }}
+                                    className="h-8 w-14 text-center rounded border px-1 text-sm text-gray-800 bg-white dark:bg-gray-900 dark:text-white/90 dark:border-gray-700"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => updateCartItemQuantity(index, item.cantidad + 1)}
+                                    className="flex items-center justify-center w-7 h-7 rounded border text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-bold"
+                                  >
+                                    +
+                                  </button>
+                                </div>
                                 {item.cantidad > item.stock && (
                                   <p className="text-xs text-yellow-600 dark:text-yellow-400">
                                     ⚠️ Límite de stock {item.stock} excedido
